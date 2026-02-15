@@ -1,3 +1,6 @@
+## 🚧 Work in Progress
+This project is currently under development.
+
 # Appointment Scheduling Micro-SaaS
 
 A micro-SaaS appointment scheduling application for service-based businesses, built with SvelteKit and Supabase.
