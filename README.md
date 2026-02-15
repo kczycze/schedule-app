@@ -1,42 +1,45 @@
-# sv
+# Appointment Scheduling Micro-SaaS
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A micro-SaaS appointment scheduling application for service-based businesses, built with SvelteKit and Supabase.
 
-## Creating a project
+## What the project does
 
-If you're seeing this, you've probably already done this step. Congrats!
+This application allows service providers to:
 
-```sh
-# create a new project
-npx sv create my-app
-```
+- Manage services and business information
+- Authenticate users (registration, login, logout)
+- Maintain user sessions with auto-restore
+- Access a protected dashboard
+- Prepare the foundation for booking and scheduling features
 
-To recreate this project with the same configuration:
+The project follows a modern full-stack architecture using:
 
-```sh
-# recreate this project
-npx sv create --template minimal --no-types --add prettier eslint --install npm .
-```
+- SvelteKit (frontend + server routes)
+- Supabase (authentication and database)
+- Vercel (deployment)
 
-## Developing
+## Why the project is useful
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+This project represents an actively developed commercial SaaS application.
 
-```sh
-npm run dev
+- Secure authentication flow
+- Session handling and route protection
+- Clean separation between routes and UI components
+- Production-ready deployment setup
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+The codebase serves as the foundation of a production-oriented software product.
 
-## Building
 
-To create a production version of your app:
+## Maintainer
 
-```sh
-npm run build
-```
+Maintained and developed by:
 
-You can preview the production build with `npm run preview`.
+**Kamil Czyczerski**  
+GitHub: https://github.com/kczycze
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+---
+
+© 2026 [Your Name]. All rights reserved.
+
+This repository contains proprietary source code.  
+No permission is granted for reuse, redistribution, or commercial replication without explicit written authorization.
