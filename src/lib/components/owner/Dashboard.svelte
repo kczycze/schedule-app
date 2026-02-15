@@ -10,9 +10,10 @@
   let loading = true;
 
   // ✅ Guard – jeśli user null → wróć na stronę główną
-  $: if ($user === null) {
-    goto('/');
-  }
+  $: if ($user === null && !loading) {
+  goto('/');
+}
+
 
   onMount(async () => {
     if (!$user) return;
@@ -32,7 +33,6 @@
 
   async function handleLogout() {
     await supabase.auth.signOut();
-    user.set(null);
     goto('/'); // zamiast window.location
   }
 </script>

@@ -47,31 +47,55 @@
     {showForm ? 'Anuluj' : '+ Dodaj usługę'}
   </button>
 
-  {#if showForm}
-    <form on:submit|preventDefault={addService}>
-      <input 
-        type="text" 
-        bind:value={newService.name}
-        placeholder="Nazwa usługi"
-        required
-      />
-      <input 
-        type="number" 
-        bind:value={newService.duration_minutes}
-        placeholder="Czas trwania (min)"
-        min="5"
-        required
-      />
-      <input 
-        type="number" 
-        bind:value={newService.price}
-        placeholder="Cena (PLN)"
-        step="0.01"
-        min="0"
-      />
-      <button type="submit">Zapisz</button>
-    </form>
-  {/if}
+{#if showForm}
+  <form on:submit|preventDefault={addService}>
+
+    <label for="service-name" class="visually-hidden">
+      Nazwa usługi
+    </label>
+
+    <input 
+      id="service-name"
+      type="text"
+      bind:value={newService.name}
+      placeholder="Nazwa usługi"
+      required
+    />
+
+    <div class="form-group">
+      <label for="service-duration">Czas trwania</label>
+      <div class="input-row">
+        <input 
+          id="service-duration"
+          type="number" 
+          bind:value={newService.duration_minutes}
+          min="5"
+          step="5"
+          required
+        />
+        <span>min</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="service-price">Cena</label>
+      <div class="input-row">
+        <input 
+          id="service-price"
+          type="number" 
+          bind:value={newService.price}
+          step="0.01"
+          min="0"
+        />
+        <span>PLN</span>
+      </div>
+    </div>
+
+    <button type="submit">Zapisz</button>
+
+  </form>
+{/if}
+
 
   <ul>
     {#each services as service}
@@ -123,4 +147,29 @@
     background-color: #f5f5f5;
     border-radius: 4px;
   }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
 </style>
