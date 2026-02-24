@@ -42,7 +42,7 @@ GitHub: https://github.com/kczycze
 
 ---
 
-© 2026 [Your Name]. All rights reserved.
+© 2026 Kamil Czyczerski. All rights reserved.
 
 This repository contains proprietary source code.  
 No permission is granted for reuse, redistribution, or commercial replication without explicit written authorization.

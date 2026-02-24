@@ -15,21 +15,30 @@
 }
 
 
-  onMount(async () => {
-    if (!$user) return;
+let companyLoadedFor = null;
 
-    const { data, error } = await supabase
-      .from('companies')
-      .select('*')
-      .eq('owner_id', $user.id)
-      .maybeSingle(); // 🔥 zmiana z single()
+$: if ($user && companyLoadedFor !== $user.id) {
+  loadCompany();
+}
 
-    if (!error) {
-      company = data;
-    }
+async function loadCompany() {
+  loading = true;
 
-    loading = false;
-  });
+  const { data, error } = await supabase
+    .from('companies')
+    .select('*')
+    .eq('owner_id', $user.id)
+    .maybeSingle();
+
+  if (!error) {
+    company = data;
+    companyLoadedFor = $user.id; // 🔥 zapamiętujemy dla kogo załadowano
+  } else {
+    console.error(error);
+  }
+
+  loading = false;
+}
 
   async function handleLogout() {
     await supabase.auth.signOut();

@@ -1,0 +1,13 @@
+{
+  "extends": "./.svelte-kit/tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,         // Pozwala mieć pliki .js w projekcie
+    "checkJs": false,        // Nie sprawdzaj typów w plikach .js
+    "strict": true,          // Opcjonalnie – włącza ścisłe typowanie dla TS
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "types": ["svelte", "node"]
+  },
+  "include": ["src/**/*", ".svelte-kit/types/**/*"]
+}
