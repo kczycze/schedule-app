@@ -11,6 +11,7 @@
 
   let customerName = '';
   let customerEmail = '';
+  let phone = '';
   let loading = false;
   let error = '';
   let success = false;
@@ -43,14 +44,23 @@
     error = '';
     
     // Validate all fields
-    const isEmailValid = validateEmail(customerEmail);
+    const trimmedEmail = customerEmail.trim();
+    const isEmailValid = validateEmail(trimmedEmail);
 
     if (!customerName.trim()) {
       error = 'Imię i nazwisko są wymagane';
       return;
     }
 
-    if (!isEmailValid) {
+    const cleanedPhone = phone.replace(/\s+/g, '');
+
+    if (!/^[0-9]{9}$/.test(cleanedPhone)) {
+    error = 'Numer telefonu musi zawierać dokładnie 9 cyfr.';
+     return;
+    }
+
+   if (!isEmailValid) {
+       error = 'Nieprawidłowy adres e-mail';
       return;
     }
 
@@ -69,7 +79,8 @@
           booking_date: dateString,
           start_time: selectedTime,
           customer_name: customerName.trim(),
-          customer_email: customerEmail.trim(),
+          customer_email: trimmedEmail,
+          phone: cleanedPhone,
           status: 'pending'
         });
 
@@ -85,12 +96,18 @@
         onSuccess();
       }, 2000);
 
-    } catch (err: any) {
-      error = err.message || 'Wystąpił błąd podczas rezerwacji';
-      console.error('Booking error:', err);
-    } finally {
-      loading = false;
-    }
+} catch (err: any) {
+  console.error('Booking error:', err);
+
+  if (err?.code === '23505') {
+    error = 'Ten termin został już zarezerwowany. Wybierz inny.';
+  } else {
+    error = err?.message || 'Wystąpił błąd podczas rezerwacji';
+  }
+
+} finally {
+  loading = false;
+}
   }
 
   function formatDateForDB(date: Date): string {
@@ -180,7 +197,7 @@
         <!-- Form -->
         <form on:submit|preventDefault={handleSubmit}>
           <div class="form-group">
-            <label for="customerName">Imię i nazwisko *</label>
+            <label for="customerName">imię i nazwisko *</label>
             <input
               id="customerName"
               type="text"
@@ -192,7 +209,7 @@
           </div>
 
           <div class="form-group">
-            <label for="customerEmail">Email *</label>
+            <label for="customerEmail">e-mail *</label>
             <input
               id="customerEmail"
               type="email"
@@ -207,6 +224,22 @@
             {/if}
           </div>
 
+          
+          <div class="form-group">
+            <label for="phone">Numer telefonu *</label>
+            <input 
+            id="phone"
+            type="tel"
+            bind:value={phone}
+            placeholder="123456789"
+            required
+            inputmode="numeric"
+            maxlength="9"
+            disabled={loading}
+            />
+            <small>Podaj 9 cyfr bez spacji</small>
+          </div>
+          
           {#if error}
             <div class="error-message">
               {error}
