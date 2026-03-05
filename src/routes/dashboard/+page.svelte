@@ -4,6 +4,8 @@
   import { goto } from '$app/navigation';
   import Dashboard from '$lib/components/owner/Dashboard.svelte';
 
+  export let data;
+
   let loading = true;
 
   onMount(async () => {
@@ -21,5 +23,5 @@
 {#if loading}
   <p>Ładowanie...</p>
 {:else}
-  <Dashboard />
+ <Dashboard bookings={data.bookings} />
 {/if}
