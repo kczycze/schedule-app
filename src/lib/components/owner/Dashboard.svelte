@@ -5,6 +5,7 @@
   import { goto } from '$app/navigation';
   import ServiceList from './ServiceList.svelte';
   import BookingList from './BookingList.svelte';
+  import EmployeeList from './EmployeeList.svelte';
 
   let company = null;
   let loading = true;
@@ -69,6 +70,12 @@ async function loadCompany() {
         <h2>Rezerwacje</h2>
         <BookingList companyId={company.id} />
       </section>
+      
+      <section>
+        <h2>Pracownicy</h2>
+        <EmployeeList companyId={company.id} />
+      </section>
+
     </div>
   {:else}
     <p>Nie znaleziono firmy.</p>

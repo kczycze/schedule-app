@@ -10,7 +10,7 @@
   async function loadBookings() {
     const { data, error } = await supabase
       .from('bookings')
-      .select('*')
+      .select('*, employees ( name )')
       .eq('company_id', companyId)
       .order('booking_date', { ascending: true });
 
@@ -41,6 +41,7 @@
         <th>Klient</th>
         <th>Email</th>
         <th>Telefon</th>
+        <th>Pracownik</th>
       </tr>
     </thead>
 
@@ -52,6 +53,7 @@
           <td>{booking.customer_name}</td>
           <td>{booking.customer_email}</td>
           <td>{booking.phone}</td>
+          <td>{booking.employees?.name ?? 'Dowolny'}</td>
         </tr>
       {/each}
     </tbody>
