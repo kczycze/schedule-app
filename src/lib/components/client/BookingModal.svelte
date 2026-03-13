@@ -6,6 +6,7 @@
   export let selectedTime: string;
   export let companyId: string;
   export let companyName: string;
+  export let bookingApproval: string = 'auto';
   export let onSuccess: () => void;
   export let onClose: () => void;
 
@@ -70,6 +71,9 @@
       // Format date for database
       const dateString = formatDateForDB(selectedDate);
 
+      // Status zależy od trybu zatwierdzania firmy
+      const bookingStatus = bookingApproval === 'auto' ? 'confirmed' : 'pending';
+
       // Insert booking into bookings table
       const { error: insertError } = await supabase
         .from('bookings')
@@ -81,7 +85,7 @@
           customer_name: customerName.trim(),
           customer_email: trimmedEmail,
           phone: cleanedPhone,
-          status: 'pending'
+          status: bookingStatus
         });
 
       if (insertError) {
@@ -160,8 +164,13 @@
     {#if success}
       <div class="success-message">
         <div class="success-icon">✓</div>
-        <h3>Rezerwacja potwierdzona!</h3>
-        <p>Potwierdzenie zostało wysłane na podany adres email.</p>
+        {#if bookingApproval === 'auto'}
+          <h3>Rezerwacja potwierdzona!</h3>
+          <p>Potwierdzenie zostało wysłane na podany adres email.</p>
+        {:else}
+          <h3>Rezerwacja przyjęta!</h3>
+          <p>Rezerwacja oczekuje na zatwierdzenie przez właściciela.</p>
+        {/if}
       </div>
     {:else}
       <div class="modal-body">

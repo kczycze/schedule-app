@@ -104,6 +104,7 @@
     {selectedTime}
     companyId={data.company.id}
     companyName={data.company.name}
+    bookingApproval={data.company.booking_approval} 
     onSuccess={handleBookingSuccess}
     onClose={closeModal}
   />

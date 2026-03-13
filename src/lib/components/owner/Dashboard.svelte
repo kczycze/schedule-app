@@ -6,6 +6,7 @@
   import ServiceList from './ServiceList.svelte';
   import BookingList from './BookingList.svelte';
   import EmployeeList from './EmployeeList.svelte';
+  import BookingSettings from './BookingSettings.svelte';
 
   let company = null;
   let loading = true;
@@ -74,6 +75,11 @@ async function loadCompany() {
       <section>
         <h2>Pracownicy</h2>
         <EmployeeList companyId={company.id} />
+      </section>
+
+      <section>
+        <h2>Ustawienia rezerwacji</h2>
+        <BookingSettings companyId={company.id} />
       </section>
 
     </div>

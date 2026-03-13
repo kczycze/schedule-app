@@ -8,7 +8,7 @@ export const load: PageLoad = async ({ params }) => {
   // Fetch company by slug
   const { data: company, error: companyError } = await supabase
     .from('companies')
-    .select('id, slug, name')
+    .select('id, slug, name, booking_approval')
     .eq('slug', slug)
     .single();
 
