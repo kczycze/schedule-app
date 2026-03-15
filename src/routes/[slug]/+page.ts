@@ -27,8 +27,20 @@ export const load: PageLoad = async ({ params }) => {
     throw error(500, 'Failed to load services');
   }
 
+  const { data: availability } = await supabase
+    .from('availability_settings')
+    .select('working_days, work_start, work_end, slot_duration')
+    .eq('company_id', company.id)
+    .single();
+ 
   return {
     company,
-    services: services || []
+    services: services || [],
+    availability: availability ?? {
+      working_days:  [1, 2, 3, 4, 5],
+      work_start:    '09:00',
+      work_end:      '17:00',
+      slot_duration: 30
+    }
   };
-};
+}

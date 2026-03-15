@@ -6,15 +6,15 @@
   export let selectedService: any;
   export let companyId: string;
   export let onTimeSelect: (time: string) => void;
+  export let availability: {
+    work_start:    string;
+    work_end:      string;
+    slot_duration: number;
+  } = { work_start: '09:00', work_end: '17:00', slot_duration: 30 };
 
   let availableSlots: string[] = [];
   let loading = true;
   let error = '';
-
-  // Working hours configuration (can be made dynamic later)
-  const WORK_START_HOUR = 9; // 09:00
-  const WORK_END_HOUR = 17; // 17:00 (last slot ends at 17:00)
-  const SLOT_INTERVAL_MINUTES = 30; // Time slots every 30 minutes
 
   $: if (selectedDate && selectedService) {
     loadAvailableSlots();
@@ -61,7 +61,7 @@
         // Check if service duration fits before work end time
         const slotTime = parseTimeToMinutes(slot);
         const endTime = slotTime + selectedService.duration_minutes;
-        const workEndTime = WORK_END_HOUR * 60;
+        const workEndTime = parseTimeToMinutes(availability.work_end);
         
         return endTime <= workEndTime;
       });
@@ -76,10 +76,11 @@
 
   function generateAllTimeSlots(): string[] {
     const slots: string[] = [];
-    const startMinutes = WORK_START_HOUR * 60;
-    const endMinutes = WORK_END_HOUR * 60;
+    const startMinutes = parseTimeToMinutes(availability.work_start);
+    const endMinutes   = parseTimeToMinutes(availability.work_end);
+    const interval     = availability.slot_duration;
 
-    for (let minutes = startMinutes; minutes < endMinutes; minutes += SLOT_INTERVAL_MINUTES) {
+    for (let minutes = startMinutes; minutes < endMinutes; minutes += interval) {
       const hours = Math.floor(minutes / 60);
       const mins = minutes % 60;
       const timeString = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;

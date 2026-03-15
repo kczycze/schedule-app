@@ -1,6 +1,7 @@
 <script lang="ts">
   export let onDateSelect: (date: Date) => void;
   export let selectedDate: Date | null = null;
+  export let workingDays: number[] = [1, 2, 3, 4, 5, 6, 7];
 
   let currentMonth = new Date();
   let today = new Date();
@@ -16,6 +17,7 @@
     isToday: boolean;
     isPast: boolean;
     isSelected: boolean;
+    isWorkingDay: boolean; 
   }
 
   function generateCalendarDays(month: Date): CalendarDay[] {
@@ -44,7 +46,8 @@
         isCurrentMonth: false,
         isToday: isSameDay(date, today),
         isPast: date < today,
-        isSelected: selectedDate ? isSameDay(date, selectedDate) : false
+        isSelected: selectedDate ? isSameDay(date, selectedDate) : false,
+        isWorkingDay: isWorkingDay(date)
       });
     }
 
@@ -56,7 +59,8 @@
         isCurrentMonth: true,
         isToday: isSameDay(date, today),
         isPast: date < today,
-        isSelected: selectedDate ? isSameDay(date, selectedDate) : false
+        isSelected: selectedDate ? isSameDay(date, selectedDate) : false,
+        isWorkingDay: isWorkingDay(date)
       });
     }
 
@@ -69,7 +73,8 @@
         isCurrentMonth: false,
         isToday: isSameDay(date, today),
         isPast: date < today,
-        isSelected: selectedDate ? isSameDay(date, selectedDate) : false
+        isSelected: selectedDate ? isSameDay(date, selectedDate) : false,
+        isWorkingDay: isWorkingDay(date)
       });
     }
 
@@ -84,6 +89,12 @@
     );
   }
 
+  function isWorkingDay(date: Date): boolean {
+    const jsDay  = date.getDay();
+    const isoDay = jsDay === 0 ? 7 : jsDay;
+    return workingDays.includes(isoDay);
+  }
+
   function previousMonth() {
     currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
   }
@@ -93,7 +104,7 @@
   }
 
   function selectDay(day: CalendarDay) {
-    if (day.isPast || !day.isCurrentMonth) return;
+    if (day.isPast || !day.isCurrentMonth || !day.isWorkingDay) return;
     onDateSelect(day.date);
   }
 
@@ -128,7 +139,8 @@
         class:today={day.isToday}
         class:past={day.isPast}
         class:selected={day.isSelected}
-        disabled={day.isPast || !day.isCurrentMonth}
+        class:off-day={!day.isWorkingDay}
+        disabled={day.isPast || !day.isCurrentMonth || !day.isWorkingDay}
         on:click={() => selectDay(day)}
       >
         {day.date.getDate()}
@@ -231,6 +243,16 @@
   .calendar-day:disabled {
     cursor: not-allowed;
     opacity: 0.4;
+  }
+
+  .calendar-day.off-day {
+    cursor: not-allowed;
+    opacity: 0.25;
+    background: #f8f9fa;
+  }  .calendar-day.off-day {
+    cursor: not-allowed;
+    opacity: 0.25;
+    background: #f8f9fa;
   }
 
   .calendar-day.selected {

@@ -78,7 +78,9 @@
     <!-- Calendar Section -->
     <section class="section calendar-section">
       <h2>Wybierz dzień</h2>
-      <Calendar onDateSelect={handleDateSelect} {selectedDate} />
+      <Calendar onDateSelect={handleDateSelect} {selectedDate} 
+       workingDays={data.availability.working_days} 
+       />
     </section>
 
     <!-- Time Slots Section -->
@@ -89,6 +91,7 @@
           {selectedDate}
           {selectedService}
           companyId={data.company.id}
+          availability={data.availability}
           onTimeSelect={handleTimeSelect}
         />
       </section>
