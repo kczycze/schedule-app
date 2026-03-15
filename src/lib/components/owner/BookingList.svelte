@@ -7,19 +7,63 @@
   let bookings = [];
   let loading = true;
 
+  // ── FILTRY I SORTOWANIE ───────────────────────────────────────────────────
+  let filterStatus = 'all';        // 'all' | 'pending' | 'confirmed' | 'rejected'
+  let filterRange  = 'upcoming';   // 'upcoming' | 'past' | 'all'
+  let sortField    = 'booking_date';
+  let sortAsc      = true;
+ 
+  // Przeładuj dane przy każdej zmianie filtrów
+  $: filterStatus, filterRange, sortField, sortAsc, loadBookings();
+ 
   async function loadBookings() {
-    const { data, error } = await supabase
+    loading = true;
+ 
+    const today = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD'
+ 
+    // Buduj zapytanie
+    let query = supabase
       .from('bookings')
       .select('*, employees ( name )')
-      .eq('company_id', companyId)
-      .order('booking_date', { ascending: true });
-
+      .eq('company_id', companyId);
+ 
+    // Filtr statusu w zapytaniu
+    if (filterStatus !== 'all') {
+      query = query.eq('status', filterStatus);
+    }
+ 
+    // Filtr zakresu dat w zapytaniu
+    if (filterRange === 'upcoming') {
+      query = query.gte('booking_date', today);
+    } else if (filterRange === 'past') {
+      query = query.lt('booking_date', today);
+    }
+ 
+    // Sortowanie — 'employee' pochodzi z joina, Supabase nie obsługuje order() na relacji
+    if (sortField !== 'employee') {
+      query = query.order(sortField, { ascending: sortAsc });
+    } else {
+      query = query.order('booking_date', { ascending: true });
+    }
+ 
+    const { data, error } = await query;
+ 
     if (error) {
       console.error(error);
     } else {
-      bookings = data;
+      if (sortField === 'employee') {
+        bookings = data.sort((a, b) => {
+          const nameA = a.employees?.name ?? '';
+          const nameB = b.employees?.name ?? '';
+          if (nameA < nameB) return sortAsc ? -1 :  1;
+          if (nameA > nameB) return sortAsc ?  1 : -1;
+          return 0;
+        });
+      } else {
+        bookings = data;
+      }
     }
-
+ 
     loading = false;
   }
 
@@ -43,20 +87,45 @@
 {#if loading}
   <p>Ładowanie rezerwacji...</p>
 
-{:else if bookings.length === 0}
-  <p>Brak rezerwacji.</p>
-
 {:else}
+  <!-- Pasek filtrów -->
+  <div class="filter-bar">
+    <select bind:value={filterRange}>
+      <option value="upcoming">Nadchodzące</option>
+      <option value="past">Przeszłe</option>
+      <option value="all">Wszystkie</option>
+    </select>
+ 
+    <select bind:value={filterStatus}>
+      <option value="all">Wszystkie statusy</option>
+      <option value="pending">Oczekujące</option>
+      <option value="confirmed">Zatwierdzone</option>
+      <option value="rejected">Odrzucone</option>
+    </select>
+  </div>
+ 
+  {#if bookings.length === 0}
+    <p>Brak rezerwacji spełniających kryteria.</p>
+  {:else}
   <table class="booking-table">
     <thead>
       <tr>
-        <th>Data</th>
+        <!-- Klikalne nagłówki sortowania -->
+        <th class="sortable" on:click={() => { sortField = 'booking_date'; sortAsc = sortField === 'booking_date' ? !sortAsc : true; }}>
+          Data {sortField === 'booking_date' ? (sortAsc ? '↑' : '↓') : '↕'}
+        </th>
         <th>Godzina</th>
-        <th>Klient</th>
+        <th class="sortable" on:click={() => { sortField = 'customer_name'; sortAsc = sortField === 'customer_name' ? !sortAsc : true; }}>
+          Klient {sortField === 'customer_name' ? (sortAsc ? '↑' : '↓') : '↕'}
+        </th>
         <th>Email</th>
         <th>Telefon</th>
-        <th>Pracownik</th>
-        <th>Status</th>
+        <th class="sortable" on:click={() => { sortAsc = sortField === 'employee' ? !sortAsc : true; sortField = 'employee'; }}>
+          Pracownik {sortField === 'employee' ? (sortAsc ? '↑' : '↓') : '↕'}
+        </th>
+        <th class="sortable" on:click={() => { sortField = 'status'; sortAsc = sortField === 'status' ? !sortAsc : true; }}>
+          Status {sortField === 'status' ? (sortAsc ? '↑' : '↓') : '↕'}
+        </th>
         <th>Akcje</th>
       </tr>
     </thead>
@@ -91,6 +160,7 @@
     </tbody>
   </table>
 {/if}
+{/if}
  
 
 <style>
@@ -98,6 +168,28 @@
     width: 100%;
     border-collapse: collapse;
   }
+
+  .filter-bar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .filter-bar select {
+    padding: 0.35rem 0.6rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    background: #fff;
+    cursor: pointer;
+  }
+ 
+  th.sortable {
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  th.sortable:hover { background: #f5f5f5; }
 
   th, td {
     padding: 0.5rem;
