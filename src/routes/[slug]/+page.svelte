@@ -80,6 +80,7 @@
       <h2>Wybierz dzień</h2>
       <Calendar onDateSelect={handleDateSelect} {selectedDate} 
        workingDays={data.availability.working_days} 
+       blockedPeriods={data.blockedPeriods}
        />
     </section>
 
@@ -92,6 +93,7 @@
           {selectedService}
           companyId={data.company.id}
           availability={data.availability}
+          blockedPeriods={data.blockedPeriods}
           onTimeSelect={handleTimeSelect}
         />
       </section>

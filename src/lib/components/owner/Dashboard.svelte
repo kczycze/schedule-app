@@ -8,6 +8,7 @@
   import EmployeeList from './EmployeeList.svelte';
   import BookingSettings from './BookingSettings.svelte';
   import AvailabilitySettings from './AvailabilitySettings.svelte';
+  import BlockedPeriods from './BlockedPeriods.svelte';
 
   let company = null;
   let loading = true;
@@ -86,6 +87,11 @@ async function loadCompany() {
       <section>
         <h2>Godziny pracy</h2>
         <AvailabilitySettings companyId={company.id} />
+      </section>
+
+      <section>
+        <h2>Urlopy - wyłączenie usług</h2>
+        <BlockedPeriods companyId={company.id} />
       </section>
 
     </div>

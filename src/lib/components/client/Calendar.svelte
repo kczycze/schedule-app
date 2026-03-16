@@ -2,6 +2,8 @@
   export let onDateSelect: (date: Date) => void;
   export let selectedDate: Date | null = null;
   export let workingDays: number[] = [1, 2, 3, 4, 5, 6, 7];
+  export let blockedPeriods: { starts_at: string; ends_at: string; 
+              employee_id: string | null }[] = [];
 
   let currentMonth = new Date();
   let today = new Date();
@@ -17,7 +19,8 @@
     isToday: boolean;
     isPast: boolean;
     isSelected: boolean;
-    isWorkingDay: boolean; 
+    isWorkingDay: boolean;
+    isBlocked: boolean;
   }
 
   function generateCalendarDays(month: Date): CalendarDay[] {
@@ -47,7 +50,8 @@
         isToday: isSameDay(date, today),
         isPast: date < today,
         isSelected: selectedDate ? isSameDay(date, selectedDate) : false,
-        isWorkingDay: isWorkingDay(date)
+        isWorkingDay: isWorkingDay(date),
+        isBlocked: isBlockedDay(date)
       });
     }
 
@@ -60,7 +64,8 @@
         isToday: isSameDay(date, today),
         isPast: date < today,
         isSelected: selectedDate ? isSameDay(date, selectedDate) : false,
-        isWorkingDay: isWorkingDay(date)
+        isWorkingDay: isWorkingDay(date),
+        isBlocked: isBlockedDay(date)
       });
     }
 
@@ -74,7 +79,8 @@
         isToday: isSameDay(date, today),
         isPast: date < today,
         isSelected: selectedDate ? isSameDay(date, selectedDate) : false,
-        isWorkingDay: isWorkingDay(date)
+        isWorkingDay: isWorkingDay(date),
+        isBlocked: isBlockedDay(date)
       });
     }
 
@@ -95,6 +101,15 @@
     return workingDays.includes(isoDay);
   }
 
+  function isBlockedDay(date: Date): boolean {
+    const dateStr = date.toISOString().split('T')[0];
+    return blockedPeriods.some(b =>
+      b.employee_id === null &&
+      dateStr >= b.starts_at &&
+      dateStr <= b.ends_at
+    );
+  }
+
   function previousMonth() {
     currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
   }
@@ -104,7 +119,7 @@
   }
 
   function selectDay(day: CalendarDay) {
-    if (day.isPast || !day.isCurrentMonth || !day.isWorkingDay) return;
+    if (day.isPast || !day.isCurrentMonth || !day.isWorkingDay || day.isBlocked) return;
     onDateSelect(day.date);
   }
 
@@ -140,7 +155,8 @@
         class:past={day.isPast}
         class:selected={day.isSelected}
         class:off-day={!day.isWorkingDay}
-        disabled={day.isPast || !day.isCurrentMonth || !day.isWorkingDay}
+        class:blocked={day.isBlocked}
+        disabled={day.isPast || !day.isCurrentMonth || !day.isWorkingDay || day.isBlocked}
         on:click={() => selectDay(day)}
       >
         {day.date.getDate()}

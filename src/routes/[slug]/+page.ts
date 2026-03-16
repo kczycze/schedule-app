@@ -32,6 +32,11 @@ export const load: PageLoad = async ({ params }) => {
     .select('working_days, work_start, work_end, slot_duration')
     .eq('company_id', company.id)
     .single();
+
+  const { data: blockedPeriods } = await supabase
+    .from('blocked_periods')
+    .select('starts_at, ends_at, employee_id')
+    .eq('company_id', company.id);
  
   return {
     company,
@@ -41,6 +46,7 @@ export const load: PageLoad = async ({ params }) => {
       work_start:    '09:00',
       work_end:      '17:00',
       slot_duration: 30
-    }
+    },
+    blockedPeriods: blockedPeriods ?? []
   };
 }

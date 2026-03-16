@@ -11,6 +11,8 @@
     work_end:      string;
     slot_duration: number;
   } = { work_start: '09:00', work_end: '17:00', slot_duration: 30 };
+    export let blockedPeriods: { starts_at: string; ends_at: string; 
+                employee_id: string | null }[] = [];
 
   let availableSlots: string[] = [];
   let loading = true;
@@ -54,6 +56,17 @@
         }
       }
 
+          const dateStr = formatDateForDB(selectedDate);
+          const isDayBlocked = blockedPeriods.some(b =>
+            b.employee_id === null &&
+            dateStr >= b.starts_at &&
+            dateStr <= b.ends_at
+      );
+ 
+      if (isDayBlocked) {
+        availableSlots = [];
+      } else {
+
       // Filter out booked slots and ensure service fits before closing time
       availableSlots = allSlots.filter(slot => {
         if (bookedSlots.has(slot)) return false;
@@ -65,6 +78,7 @@
         
         return endTime <= workEndTime;
       });
+    }
 
     } catch (err) {
       error = 'Nie udało się załadować dostępnych terminów';
